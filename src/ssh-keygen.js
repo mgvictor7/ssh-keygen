@@ -10,9 +10,17 @@ var log = function(a){
 function binPath() {
 	if(process.platform !== 'win32') return 'ssh-keygen';
 
+	let currentPath;
 	switch(process.arch) {
-		case 'ia32': return path.join(__dirname, '..', 'bin', '32', 'ssh-keygen.exe');
-		case 'x64': return path.join(__dirname, '..', 'bin', '64', 'ssh-keygen.exe');
+		case 'ia32': currentPath = path.join(__dirname, '..', 'bin', '32', 'ssh-keygen.exe');
+		case 'x64': currentPath = path.join(__dirname, '..', 'bin', '64', 'ssh-keygen.exe');
+	}
+
+	if (currentPath) {
+		if (process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
+			currentPath = 'resources\\app.asar.unpacked\\' + currentPath;
+		}
+		return currentPath;
 	}
 
 	throw new Error('Unsupported platform');
